@@ -1,0 +1,18 @@
+---
+description: MiniVerse Go backend layers and import boundaries
+globs: "**/*.go"
+alwaysApply: false
+---
+
+# Go backend boundaries
+
+Full docs: `docs/backend/architecture.md`, `docs/backend/layers.md`, `docs/backend/coding-standards.md`.
+
+## Hard rules
+
+- `chem` is the simulation library. Catalog, reactions, `World.Tick`, `DemoWorld`, and `ParcelView` live there.
+- `cmd/web` is HTTP only: mutex, routes, frame JSON, embed `dist`. No new chemistry.
+- `cmd/sandbox` prints ticks only. No HTTP, no catalog edits.
+- Import one way: `cmd/*` → `chem`. Never the reverse. Never import `web/` from Go for simulation.
+- Frame JSON (`tick`, `mass`, `parcels` / `ParcelView` tags) stays in sync with `web/src/types.ts` when changed; prefer not to change it.
+- Plain comments; do not invent chemistry outside `DefaultCatalog`. Do not weaken physicist/chemist vetoes in adapters.
